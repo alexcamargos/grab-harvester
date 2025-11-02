@@ -4,4 +4,8 @@ version = "0.1.0"
 description = "A lightweight, concurrent, and robust batch file downloader for Python. Simplifies fetching multiple files from URLs by using a thread pool, checking for existing files, and reporting failures."
 readme = "README.md"
 requires-python = ">=3.13"
-dependencies = []
+dependencies = [
+    "httpx>=0.28.1",
+    "loguru>=0.7.3",
+    "tqdm>=4.67.1",
+]
