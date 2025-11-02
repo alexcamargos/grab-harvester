@@ -76,3 +76,20 @@ def test_download_file_success(mocker, downloader_service, mock_path):
 
     # Assert that the returned path is the expected one.
     assert result_path == mock_path
+
+
+def test_download_file_network_error(mocker, downloader_service, mock_path):
+    """Tests handling of network errors during file download."""
+
+    # Step 1 - Arrange
+    # Mock httpx.get to raise a network exception.
+    mocker.patch('httpx.get',
+                 side_effect=httpx.RequestError("Connection failed",
+                                                request=mocker.Mock()))
+
+    test_url = 'http://example.com/file.zip'
+
+    # Step 2 - Act & Step 3 - Assert
+    # Assert that the call to download_file raises the correct exception.
+    with pytest.raises(NetworkDownloadError, match="Network request for .* failed"):
+        downloader_service.download_file(test_url, mock_path)
