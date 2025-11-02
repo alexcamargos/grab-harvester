@@ -93,3 +93,85 @@ def test_download_file_network_error(mocker, downloader_service, mock_path):
     # Assert that the call to download_file raises the correct exception.
     with pytest.raises(NetworkDownloadError, match="Network request for .* failed"):
         downloader_service.download_file(test_url, mock_path)
+
+
+def test_download_file_already_exists_and_complete(mocker, downloader_service, mock_path):
+    """Tests that the download is skipped if the file already exists and is complete."""
+
+    # Step 1 - Arrange
+    # Mock the HTTP response with a specific content-length
+    mock_response = mocker.Mock()
+    mock_response.headers = {'content-length': '1024'}
+    mocker.patch('httpx.get', return_value=mock_response)
+
+    # Mock 'open' to ensure it's NOT called
+    mock_file_open = mocker.patch('builtins.open', mocker.mock_open())
+
+    # Mock Path.exists to return True
+    mocker.patch('pathlib.Path.exists', return_value=True)
+
+    # Mock stat().st_size to match the remote size
+    mock_stat_result = mocker.Mock()
+    mock_stat_result.st_size = 1024
+    mocker.patch('pathlib.Path.stat', return_value=mock_stat_result)
+
+    # Step 2 - Act
+    result_path = downloader_service.download_file('http://example.com/file.zip',
+                                                   mock_path)
+
+    # Step 3 - Assert
+    # The core of this test: ensure open() was never called, skipping the download.
+    mock_file_open.assert_not_called()
+    # Ensure the function still returns the correct path.
+    assert result_path == mock_path
+
+
+def test_download_file_already_exists_but_incomplete(mocker, downloader_service, mock_path):
+    """Tests that the file is re-downloaded if it exists but is incomplete."""
+
+    # Step 1 - Arrange
+    # Mock the HTTP response
+    mock_response = mocker.Mock()
+    mock_response.headers = {'content-length': '2048'}  # Remote file is larger
+    mock_response.iter_bytes.return_value = [b'new content']
+    mocker.patch('httpx.get', return_value=mock_response)
+
+    # Mock 'open' to check that it IS called
+    mock_file_open = mocker.patch('builtins.open', mocker.mock_open())
+
+    # Mock Path.exists to return True
+    mocker.patch('pathlib.Path.exists', return_value=True)
+
+    # Mock stat().st_size to be smaller than the remote size
+    mock_stat_result = mocker.Mock()
+    mock_stat_result.st_size = 1024  # Local file is smaller
+    mocker.patch('pathlib.Path.stat', return_value=mock_stat_result)
+    mocker.patch('pathlib.Path.mkdir')
+
+    # Step 2 & 3 - Act and Assert
+    downloader_service.download_file('http://example.com/file.zip', mock_path)
+    # The core of this test: ensure open() WAS called, overwriting the old file.
+    mock_file_open.assert_called_once()
+    mock_file_open().write.assert_called_once_with(b'new content')
+
+
+def test_download_file_io_error(mocker, downloader_service, mock_path):
+    """Tests handling of file I/O errors during file download."""
+
+    # Step 1 - Arrange
+    # Mock the HTTP response (network is working).
+    mock_response = mocker.Mock()
+    mock_response.raise_for_status.return_value = None
+    mocker.patch('httpx.get', return_value=mock_response)
+
+    # Mock 'open' to raise an I/O error (e.g., permission denied).
+    mocker.patch('builtins.open', side_effect=IOError('Permission denied'))
+
+    mocker.patch('pathlib.Path.exists', return_value=False)
+    mocker.patch('pathlib.Path.mkdir')
+
+    test_url = 'http://example.com/file.zip'
+
+    # Step 2 - Act & Step 3 - Assert
+    with pytest.raises(FileOperationError, match='File operation for .* failed'):
+        downloader_service.download_file(test_url, mock_path)
