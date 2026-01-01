@@ -175,3 +175,36 @@ def test_download_file_io_error(mocker, downloader_service, mock_path):
     # Step 2 - Act & Step 3 - Assert
     with pytest.raises(FileOperationError, match='File operation for .* failed'):
         downloader_service.download_file(test_url, mock_path)
+
+
+def test_download_file_to_temp_dir(mocker, downloader_service):
+    """Tests downloading a file to the system temporary directory when no path is provided."""
+
+    # Step 1 - Arrange
+    test_url = 'http://example.com/temp_file.zip'
+    fake_temp_dir = '/fake/temp'
+    expected_path = Path(fake_temp_dir) / 'temp_file.zip'
+
+    # Mock httpx response
+    mock_response = mocker.Mock()
+    mock_response.raise_for_status.return_value = None
+    mock_response.iter_bytes.return_value = [b'data']
+    mocker.patch('httpx.get', return_value=mock_response)
+
+    # Mock tempfile.gettempdir to return our fake temp directory.
+    mocker.patch('tempfile.gettempdir', return_value=fake_temp_dir)
+    # Mock Path.is_dir to return True so the code treats the temp path as a directory.
+    mocker.patch('pathlib.Path.is_dir', return_value=True)
+    # Mock Path.exists to return False (file doesn't exist yet).
+    mocker.patch('pathlib.Path.exists', return_value=False)
+    # Mock Path.mkdir to avoid filesystem operations.
+    mocker.patch('pathlib.Path.mkdir')
+    # Mock open to simulate file writing.
+    mock_file_open = mocker.patch('builtins.open', mocker.mock_open())
+
+    # Step 2 - Act
+    result_path = downloader_service.download_file(test_url)
+
+    # Step 3 - Assert
+    assert result_path == expected_path
+    mock_file_open.assert_called_once_with(expected_path, 'wb')
