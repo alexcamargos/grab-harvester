@@ -113,6 +113,7 @@ def test_download_file_already_exists_and_complete(mocker, downloader_service, m
     # Mock stat().st_size to match the remote size
     mock_stat_result = mocker.Mock()
     mock_stat_result.st_size = 1024
+    mock_stat_result.st_mode = 33188
     mocker.patch('pathlib.Path.stat', return_value=mock_stat_result)
 
     # Step 2 - Act
@@ -145,6 +146,7 @@ def test_download_file_already_exists_but_incomplete(mocker, downloader_service,
     # Mock stat().st_size to be smaller than the remote size
     mock_stat_result = mocker.Mock()
     mock_stat_result.st_size = 1024  # Local file is smaller
+    mock_stat_result.st_mode = 33188
     mocker.patch('pathlib.Path.stat', return_value=mock_stat_result)
     mocker.patch('pathlib.Path.mkdir')
 
