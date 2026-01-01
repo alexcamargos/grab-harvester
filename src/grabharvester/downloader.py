@@ -16,6 +16,7 @@
 
 """Module for downloading files concurrently using multiple threads."""
 
+import tempfile
 from pathlib import Path
 
 import httpx
@@ -27,20 +28,27 @@ from .interfaces import FileOperationError, NetworkDownloadError
 class DownloadService:
     """Downloads a single file from a URL using HTTP."""
 
-    def download_file(self, url: str, file_path: Path) -> Path:
+    def download_file(self, url: str, file_path: Path | None = None) -> Path:
         """Download a file from a URL and save it to a local file path.
-        
+
         Arguments:
-            url {str} -- The URL of the file to download.
-            file_path {Path} -- The local file path where the downloaded file will be saved.
+            url(str): The URL of the file to download.
+            file_path (Path | None): The local file path or directory. If None, uses system temp dir.
 
         Returns:
-            Path -- The local file path where the downloaded file was saved.
-
+            Path: The local file path where the downloaded file was saved.
         Raises:
-            NetworkDownloadError -- If there was an error during the network request.
-            FileOperationError -- If there was an error during file I/O operations.
+            NetworkDownloadError: If there was an error during the network request.
+            FileOperationError: If there was an error during file I/O operations.
         """
+
+        # Determine the correct file path.
+        if file_path is None:
+            file_path = Path(tempfile.gettempdir())
+
+        if file_path.is_dir():
+            filename = url.split('/')[-1].split('?')[0] or 'downloaded_file'
+            file_path = file_path / filename
 
         try:
             response = httpx.get(url, timeout=30)

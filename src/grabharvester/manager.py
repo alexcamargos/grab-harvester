@@ -53,7 +53,8 @@ class DownloadManager:
                 try:
                     future.result()
                 except DownloadError as error:
-                    logger.error(f'Task failed for {task.destination_path.name}: {error}')
+                    task_name = task.destination_path.name if task.destination_path else task.url
+                    logger.error(f'Task failed for {task_name}: {error}')
                     failed_tasks.append(task)
 
         return failed_tasks

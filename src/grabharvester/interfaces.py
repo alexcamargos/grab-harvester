@@ -38,7 +38,7 @@ class FileOperationError(DownloadError):
 class DownloadServiceProtocol(Protocol):
     """Defines the protocol for a download service."""
 
-    def download_file(self, url: str, file_path: Path) -> Path:
+    def download_file(self, url: str, file_path: Path | None = None) -> Path:
         """Download a file from a URL and save it to a local file path."""
         ...
 
@@ -47,4 +47,4 @@ class DownloadTask(NamedTuple):
     """Represents a single file download task."""
 
     url: str
-    destination_path: Path
+    destination_path: Path | None = None
