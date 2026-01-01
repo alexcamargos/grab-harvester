@@ -1,14 +1,32 @@
 [project]
 name = "grab-harvester"
-version = "0.1.0"
+version = "0.0.1"
 description = "A lightweight, concurrent, and robust batch file downloader for Python. Simplifies fetching multiple files from URLs by using a thread pool, checking for existing files, and reporting failures."
 readme = "README.md"
-requires-python = ">=3.13"
+requires-python = ">=3.11"
+license = { text = "MIT" }
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Topic :: Internet :: WWW/HTTP",
+    "Topic :: Utilities",
+]
+keywords = ["downloader", "batch", "concurrent", "http", "thread-pool", "automation", "file-transfer"]
 dependencies = [
     "httpx>=0.28.1",
     "loguru>=0.7.3",
     "tqdm>=4.67.1",
 ]
+
+[project.urls]
+Repository = "https://github.com/alexcamargos/grab-harvester"
+Issues = "https://github.com/alexcamargos/grab-harvester/issues"
 
 [dependency-groups]
 dev = [
@@ -17,3 +35,20 @@ dev = [
 ]
 [tool.pytest.ini_options]
 pythonpath = "src"
+
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages]
+find = { where = ["src"], include = ["grab_harvester*"] }
+
+[tool.isort]
+profile = "black"
+line_length = 120
+
+[tool.pylint.format]
+max-line-length = 120
+
+[tool.black]
+line-length = 120
