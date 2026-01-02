@@ -30,11 +30,17 @@ Issues = "https://github.com/alexcamargos/grab-harvester/issues"
 
 [dependency-groups]
 dev = [
+    "black>=25.12.0",
+    "isort>=7.0.0",
+    "pre-commit>=4.5.1",
+    "pylint>=4.0.4",
     "pytest>=8.4.2",
+    "pytest-cov>=7.0.0",
     "pytest-mock>=3.15.1",
 ]
 [tool.pytest.ini_options]
 pythonpath = "src"
+addopts = "--cov=src/grabharvester --cov-report=term-missing"
 
 [build-system]
 requires = ["setuptools>=61.0"]
@@ -52,3 +58,4 @@ max-line-length = 120
 
 [tool.black]
 line-length = 120
+skip-string-normalization = true
