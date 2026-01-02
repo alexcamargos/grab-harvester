@@ -16,7 +16,7 @@
 
 """Manages concurrent downloading of multiple files."""
 
-from concurrent.futures import ThreadPoolExecutor, as_completed
+from concurrent.futures import Future, ThreadPoolExecutor, as_completed
 from pathlib import Path
 from typing import Dict, List
 
@@ -35,7 +35,7 @@ class DownloadManager:
         __max_threads(int): The maximum number of concurrent threads.
 
     Methods:
-        run(tasks: List[DownloadTask]) -> DownloadResult: Executes a list of download tasks concurrently. 
+        run(tasks: List[DownloadTask]) -> DownloadResult: Executes a list of download tasks concurrently.
     """
 
     def __init__(self, downloader: DownloadServiceProtocol, max_threads: int = 5) -> None:
@@ -68,16 +68,13 @@ class DownloadManager:
 
         # Use ThreadPoolExecutor to manage concurrent downloads.
         with ThreadPoolExecutor(max_workers=self.__max_threads) as executor:
-            future_to_task: Dict[object, DownloadTask] = {
-                executor.submit(self.__downloader.download_file,
-                                task.url,
-                                task.destination_path): task for task in tasks
+            future_to_task: Dict[Future[Path], DownloadTask] = {
+                executor.submit(self.__downloader.download_file, task.url, task.destination_path): task
+                for task in tasks
             }
 
             # Use tqdm to display a progress bar.
-            progress_bar = tqdm(as_completed(future_to_task),
-                                total=len(tasks),
-                                desc='Downloading files...')
+            progress_bar = tqdm(as_completed(future_to_task), total=len(tasks), desc='Downloading files...')
             for future in progress_bar:
                 task = future_to_task[future]
                 try:
