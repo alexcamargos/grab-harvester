@@ -16,13 +16,14 @@
 
 """Example script demonstrating the use of Grab Harvester library without logging."""
 
+# pylint: disable=wrong-import-position, duplicate-code
+
 import sys
 from pathlib import Path
 
 # Add src to path to run execution
 sys.path.append(str(Path(__file__).parent.parent / "src"))
 
-# pylint: disable=wrong-import-position
 from grabharvester import DownloadManager, DownloadService, DownloadTask
 
 # NOTE: We do NOT enable logger here, so it should be silent
