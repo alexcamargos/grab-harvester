@@ -16,13 +16,13 @@
 
 """Unit tests for the DownloadManager class."""
 
+# pylint: disable=redefined-outer-name
+
 from pathlib import Path
 
 import pytest
 
-from grabharvester.interfaces import (DownloadTask,
-                                      FileOperationError,
-                                      NetworkDownloadError)
+from grabharvester.interfaces import DownloadTask, FileOperationError, NetworkDownloadError
 from grabharvester.manager import DownloadManager
 
 
@@ -42,10 +42,8 @@ def download_manager(mock_downloader):
 def sample_tasks():
     """Provides a list of sample DownloadTask objects."""
     return [
-        DownloadTask(url='http://example.com/file1.zip',
-                     destination_path=Path('/tmp/file1.zip')),
-        DownloadTask(url='http://example.com/file2.zip',
-                     destination_path=Path('/tmp/file2.zip')),
+        DownloadTask(url='http://example.com/file1.zip', destination_path=Path('/tmp/file1.zip')),
+        DownloadTask(url='http://example.com/file2.zip', destination_path=Path('/tmp/file2.zip')),
     ]
 
 
@@ -70,9 +68,7 @@ def test_run_all_tasks_succeed(mocker, download_manager, mock_downloader, sample
 
     # Step 1 - Arrange
     # Mock tqdm to prevent progress bar output during tests
-    mocker.patch('grabharvester.manager.tqdm',
-                 side_effect=lambda x,
-                 **kwargs: x)
+    mocker.patch('grabharvester.manager.tqdm', side_effect=lambda x, **kwargs: x)
 
     # Step 2 - Act
     # Step 2 - Act
@@ -83,25 +79,17 @@ def test_run_all_tasks_succeed(mocker, download_manager, mock_downloader, sample
     assert len(result.successes) == len(sample_tasks)
     assert mock_downloader.download_file.call_count == len(sample_tasks)
     # Verify that the downloader was called with the correct arguments for each task
-    mock_downloader.download_file.assert_any_call(sample_tasks[0].url,
-                                                  sample_tasks[0].destination_path)
-    mock_downloader.download_file.assert_any_call(sample_tasks[1].url,
-                                                  sample_tasks[1].destination_path)
+    mock_downloader.download_file.assert_any_call(sample_tasks[0].url, sample_tasks[0].destination_path)
+    mock_downloader.download_file.assert_any_call(sample_tasks[1].url, sample_tasks[1].destination_path)
 
 
 @pytest.mark.parametrize("error_to_raise", [NetworkDownloadError, FileOperationError])
-def test_run_with_specific_failures(mocker,
-                                    download_manager,
-                                    mock_downloader,
-                                    sample_tasks,
-                                    error_to_raise):
+def test_run_with_specific_failures(mocker, download_manager, mock_downloader, sample_tasks, error_to_raise):
     """Tests that the manager correctly handles specific download failures."""
 
     # Step 1 - Arrange
     # Mock tqdm to prevent progress bar output
-    mocker.patch('grabharvester.manager.tqdm',
-                 side_effect=lambda x,
-                 **kwargs: x)
+    mocker.patch('grabharvester.manager.tqdm', side_effect=lambda x, **kwargs: x)
     # Mock logger and store the mock object to make assertions on it later.
     mock_logger = mocker.patch('grabharvester.manager.logger')
 
@@ -112,7 +100,7 @@ def test_run_with_specific_failures(mocker,
         # Result for the first task (success)
         sample_tasks[0].destination_path,
         # Specific exception for the second task (failure)
-        error_to_raise(error_message)
+        error_to_raise(error_message),
     ]
 
     # Step 2 - Act
@@ -123,11 +111,10 @@ def test_run_with_specific_failures(mocker,
     # Check that the list of failed tasks contains only the one that failed.
     assert len(result.failures) == 1
     assert result.failures[0] == task_to_fail
-    
+
     # Check that success list contains the successful one
     assert len(result.successes) == 1
     assert result.successes[0] == sample_tasks[0].destination_path
-
 
     # Check that the downloader was still called for all tasks.
     assert mock_downloader.download_file.call_count == len(sample_tasks)

@@ -16,6 +16,8 @@
 
 """Unit tests for the DownloadService class."""
 
+# pylint: disable=redefined-outer-name
+
 from pathlib import Path
 
 import httpx
@@ -49,7 +51,7 @@ def test_download_file_success(mocker, downloader_service, mock_path):
     mock_response.iter_bytes.return_value = [b'file', b'content']
 
     # Mock httpx.get to return our simulated response.
-    mocker.patch('httpx.get', return_value=mock_response)
+    mock_get = mocker.patch('httpx.get', return_value=mock_response)
 
     # Mock 'open' to simulate writing to a file without touching the disk.
     mock_file_open = mocker.patch('builtins.open', mocker.mock_open())
@@ -66,7 +68,7 @@ def test_download_file_success(mocker, downloader_service, mock_path):
 
     # Step 3 - Assert
     # Assert that httpx.get was called with the correct URL.
-    httpx.get.assert_called_once_with(test_url, timeout=30)
+    mock_get.assert_called_once_with(test_url, timeout=30)
     # Assert that the file was opened for writing in binary mode ('wb').
     mock_file_open.assert_called_once_with(mock_path, 'wb')
     # Assert that the content was written to the file.
@@ -83,9 +85,7 @@ def test_download_file_network_error(mocker, downloader_service, mock_path):
 
     # Step 1 - Arrange
     # Mock httpx.get to raise a network exception.
-    mocker.patch('httpx.get',
-                 side_effect=httpx.RequestError("Connection failed",
-                                                request=mocker.Mock()))
+    mocker.patch('httpx.get', side_effect=httpx.RequestError("Connection failed", request=mocker.Mock()))
 
     test_url = 'http://example.com/file.zip'
 
@@ -117,8 +117,7 @@ def test_download_file_already_exists_and_complete(mocker, downloader_service, m
     mocker.patch('pathlib.Path.stat', return_value=mock_stat_result)
 
     # Step 2 - Act
-    result_path = downloader_service.download_file('http://example.com/file.zip',
-                                                   mock_path)
+    result_path = downloader_service.download_file('http://example.com/file.zip', mock_path)
 
     # Step 3 - Assert
     # The core of this test: ensure open() was never called, skipping the download.
@@ -209,6 +208,7 @@ def test_download_file_to_temp_dir(mocker, downloader_service):
 
     # Step 3 - Assert
     mock_file_open.assert_called_once_with(expected_path, 'wb')
+    assert result_path == expected_path
 
 
 def test_download_file_mkdir_error(mocker, downloader_service, mock_path):
@@ -230,10 +230,10 @@ def test_download_file_empty_url(downloader_service, mock_path):
     """Tests that an empty URL is handled (likely by the library or request error)."""
 
     # NOTE: httpx.get('') raises different errors possibly, but let's see how our code reacts.
-    # Actually, httpx.get('') usually works but returns current page? 
+    # Actually, httpx.get('') usually works but returns current page?
     # Or raises InvalidURL. Let's assume we want to catch whatever httpx throws.
     # If we pass empty string, httpx might raise LocalProtocolError or similar.
-    # But usually the library user validates input. 
+    # But usually the library user validates input.
     # Let's test an invalid schema scenario which is common.
 
     with pytest.raises(NetworkDownloadError):

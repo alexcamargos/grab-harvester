@@ -36,7 +36,7 @@ def test_library_exposure():
         'NetworkDownloadError',
         'FileOperationError',
     ]
-    
+
     # Step 3 - Assert
     # Check that each expected attribute is exposed in the grabharvester package.
     for attribute in expected_attributes:
@@ -52,7 +52,7 @@ def test_logging_default_behavior():
     # Step 1 - Arrange
     # Create a sink to capture logs.
     captured_logs = []
-    sink_id = logger.add(lambda msg: captured_logs.append(msg), level="INFO")
+    sink_id = logger.add(captured_logs.append, level="INFO")
 
     # Step 2 - Act & Step 3 - Assert
     try:
@@ -77,7 +77,7 @@ def test_logging_enable_behavior():
 
     # Step 1 - Arrange
     captured_logs = []
-    sink_id = logger.add(lambda msg: captured_logs.append(msg), level="INFO")
+    sink_id = logger.add(captured_logs.append, level="INFO")
 
     # Step 2 - Act & Step 3 - Assert
     try:

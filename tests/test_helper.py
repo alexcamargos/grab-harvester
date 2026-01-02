@@ -16,6 +16,8 @@
 
 """Unit tests for the helper function 'download' in __init__.py."""
 
+# pylint: disable=redefined-outer-name
+
 from pathlib import Path
 
 import pytest
@@ -44,8 +46,7 @@ def test_download_helper_mixed_inputs(mock_downloader):
     mock_manager_cls, _ = mock_downloader
     urls = [
         "http://example.com/file1.zip",
-        DownloadTask(url="http://example.com/file2.zip",
-                     destination_path=Path("/custom/path.zip"))
+        DownloadTask(url="http://example.com/file2.zip", destination_path=Path("/custom/path.zip")),
     ]
 
     # Step 2 - Act
@@ -74,7 +75,7 @@ def test_download_helper_mixed_inputs(mock_downloader):
 
 def test_download_helper_with_destination_dir(mock_downloader):
     """Tests download() with a destination directory overriding string URLs."""
-    
+
     # Step 1 - Arrange
     mock_manager_cls, _ = mock_downloader
 
