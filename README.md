@@ -18,6 +18,9 @@
     - [2. Configuração e Execução](#2-configuração-e-execução)
       - [Opção A: Usando uv (Recomendado)](#opção-a-usando-uv-recomendado)
       - [Opção B: Usando pip](#opção-b-usando-pip)
+  - [Como Usar](#como-usar)
+    - [Uso Simples (Script Rápido)](#uso-simples-script-rápido)
+    - [Uso Avançado (Integração em Projetos)](#uso-avançado-integração-em-projetos)
   - [Aprendizados e Arquitetura](#aprendizados-e-arquitetura)
   - [Autor](#autor)
   - [Licença](#licença)
@@ -94,6 +97,58 @@ O [uv](https://github.com/astral-sh/uv) é um gerenciador de pacotes extremament
     python examples/library_example.py
     pytest
     ```
+
+
+## Como Usar
+
+O Grab Harvester pode ser utilizado tanto para scripts rápidos quanto integrado em sistemas maiores.
+
+### Uso Simples (Script Rápido)
+
+A função `download` é a maneira mais rápida de começar. Ela aceita uma lista de URLs (strings) ou objetos `DownloadTask`.
+
+```python
+from grabharvester import download
+
+urls = [
+    "https://www.python.org/static/img/python-logo.png",
+    "https://httpbin.org/image/jpeg"
+]
+
+# Baixa os arquivos usando 4 threads simultâneas
+download(urls, max_threads=4, destination_dir="./downloads")
+```
+
+### Uso Avançado (Integração em Projetos)
+
+Para maior controle e aderência aos princípios SOLID (Injeção de Dependência), utilize as classes `DownloadManager` e `DownloadService`.
+
+```python
+from pathlib import Path
+from grabharvester import DownloadManager, DownloadService, DownloadTask
+
+# 1. Instancie o serviço (pode ser mockado em testes)
+service = DownloadService()
+
+# 2. Inicialize o gerenciador
+manager = DownloadManager(service, max_threads=2)
+
+# 3. Defina as tarefas
+tasks = [
+    DownloadTask(url='https://www.python.org/static/img/python-logo.png'),
+    DownloadTask(
+        url='https://www.google.com/images/branding/googlelogo/1x/googlelogo_color_272x92dp.png',
+        destination_path=Path('./google_logo.png')
+    ),
+]
+
+# 4. Execute
+print("Iniciando downloads...")
+results = manager.run(tasks)
+
+print(f"Sucessos: {len(results.successes)}")
+print(f"Falhas: {len(results.failures)}")
+```
 
 
 ## Aprendizados e Arquitetura
