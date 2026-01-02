@@ -4,6 +4,10 @@
 
 [![Python](https://img.shields.io/badge/Python-3.11%2B-blue?style=for-the-badge&logo=python&logoColor=white)](https://www.python.org/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg?style=for-the-badge)](LICENSE)
+[![Code Style: pre-commit](https://img.shields.io/badge/pre--commit-enabled-brightgreen?logo=pre-commit&logoColor=white&style=for-the-badge)](https://github.com/pre-commit/pre-commit)
+[![CI Status](https://img.shields.io/github/actions/workflow/status/alexcamargos/grab-harvester/ci.yml?logo=github&label=CI&style=for-the-badge)](https://github.com/alexcamargos/grab-harvester/actions/workflows/ci.yml)
+[![Codecov](https://img.shields.io/codecov/c/github/alexcamargos/grab-harvester?logo=codecov&logoColor=white&style=for-the-badge)](https://codecov.io/gh/alexcamargos/grab-harvester)
+[![Last Commit](https://img.shields.io/github/last-commit/alexcamargos/grab-harvester?style=for-the-badge&logo=github)](https://github.com/alexcamargos/grab-harvester/commits/main)
 
 > Um downloader de arquivos em lote, leve, concorrente e robusto para Python.
 
