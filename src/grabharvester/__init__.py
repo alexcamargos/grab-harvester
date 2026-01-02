@@ -28,7 +28,7 @@ To enable logging, use:
 """
 
 from pathlib import Path
-from typing import List, Sequence, Union
+from typing import Sequence, Union
 
 from loguru import logger
 
@@ -36,14 +36,15 @@ from .downloader import DownloadService
 from .interfaces import DownloadError, DownloadResult, DownloadTask, FileOperationError, NetworkDownloadError
 from .manager import DownloadManager
 
-
 # NOTE: Disable logging by default when used as a library.
 logger.disable('grabharvester')
 
 
+# fmt: off
 def download(urls: Sequence[Union[str, DownloadTask]],
              destination_dir: Union[str, Path, None] = None,
              max_threads: int = 5) -> DownloadResult:
+# fmt: on
     """High-level function to download multiple files concurrently.
 
     Arguments:
