@@ -22,25 +22,22 @@ from typing import List, NamedTuple, Protocol
 
 class DownloadError(Exception):
     """Base custom exception for download-related errors."""
-    pass
 
 
 class NetworkDownloadError(DownloadError):
     """Exception for errors during the network request part of the download."""
-    pass
 
 
 class FileOperationError(DownloadError):
     """Exception for errors during file I/O operations (write, create dir, etc.)."""
-    pass
 
 
+# pylint: disable=too-few-public-methods
 class DownloadServiceProtocol(Protocol):
     """Defines the protocol for a download service."""
 
     def download_file(self, url: str, file_path: Path | None = None) -> Path:
         """Download a file from a URL and save it to a local file path."""
-        ...
 
 
 class DownloadTask(NamedTuple):
