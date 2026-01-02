@@ -56,10 +56,12 @@ def test_run_with_no_tasks(download_manager, mock_downloader):
     tasks = []
 
     # Step 2 - Act
-    failed_tasks = download_manager.run(tasks)
+    # Step 2 - Act
+    result = download_manager.run(tasks)
 
     # Step 3 - Assert
-    assert failed_tasks == []
+    assert result.failures == []
+    assert result.successes == []
     mock_downloader.download_file.assert_not_called()
 
 
@@ -73,10 +75,12 @@ def test_run_all_tasks_succeed(mocker, download_manager, mock_downloader, sample
                  **kwargs: x)
 
     # Step 2 - Act
-    failed_tasks = download_manager.run(sample_tasks)
+    # Step 2 - Act
+    result = download_manager.run(sample_tasks)
 
     # Step 3 - Assert
-    assert failed_tasks == []
+    assert result.failures == []
+    assert len(result.successes) == len(sample_tasks)
     assert mock_downloader.download_file.call_count == len(sample_tasks)
     # Verify that the downloader was called with the correct arguments for each task
     mock_downloader.download_file.assert_any_call(sample_tasks[0].url,
@@ -112,12 +116,18 @@ def test_run_with_specific_failures(mocker,
     ]
 
     # Step 2 - Act
-    failed_tasks = download_manager.run(sample_tasks)
+    # Step 2 - Act
+    result = download_manager.run(sample_tasks)
 
     # Step 3 - Assert
     # Check that the list of failed tasks contains only the one that failed.
-    assert len(failed_tasks) == 1
-    assert failed_tasks[0] == task_to_fail
+    assert len(result.failures) == 1
+    assert result.failures[0] == task_to_fail
+    
+    # Check that success list contains the successful one
+    assert len(result.successes) == 1
+    assert result.successes[0] == sample_tasks[0].destination_path
+
 
     # Check that the downloader was still called for all tasks.
     assert mock_downloader.download_file.call_count == len(sample_tasks)
