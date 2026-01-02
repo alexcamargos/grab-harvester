@@ -17,7 +17,7 @@
 """Shared data structures and interface protocols for the application."""
 
 from pathlib import Path
-from typing import NamedTuple, Protocol
+from typing import List, NamedTuple, Protocol
 
 
 class DownloadError(Exception):
@@ -48,3 +48,15 @@ class DownloadTask(NamedTuple):
 
     url: str
     destination_path: Path | None = None
+
+
+class DownloadResult(NamedTuple):
+    """Result of a download batch execution.
+
+    Attributes:
+        successes: List of paths to successfully downloaded files.
+        failures: List of tasks that failed.
+    """
+
+    successes: List[Path]
+    failures: List[DownloadTask]
