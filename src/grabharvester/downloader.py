@@ -25,6 +25,7 @@ from loguru import logger
 from .interfaces import FileOperationError, NetworkDownloadError
 
 
+# pylint: disable=too-few-public-methods
 class DownloadService:
     """Downloads a single file from a URL using HTTP."""
 
