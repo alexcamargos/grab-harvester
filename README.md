@@ -81,6 +81,11 @@ O [uv](https://github.com/astral-sh/uv) é um gerenciador de pacotes extremament
     uv run pytest
     ```
 
+    > **Dica:** Para atualizar o arquivo `requirements.txt` (usado na Opção B) com as versões travadas:
+    > ```bash
+    > uv export --format requirements-txt --output-file requirements.txt
+    > ```
+
 #### Opção B: Usando pip
 
 1.  **Crie e ative um ambiente virtual:**
@@ -92,8 +97,7 @@ O [uv](https://github.com/astral-sh/uv) é um gerenciador de pacotes extremament
 
 2.  **Instale as dependências:**
     ```bash
-    pip install httpx loguru tqdm
-    pip install pytest pytest-mock  # Para rodar os testes
+    pip install -r requirements.txt
     ```
 
 3.  **Execute:**
