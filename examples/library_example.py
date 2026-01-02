@@ -14,6 +14,8 @@
 #  License: MIT
 # ------------------------------------------------------------------------------
 
+"""Example script demonstrating the use of Grab Harvester library without logging."""
+
 import sys
 from pathlib import Path
 
@@ -24,6 +26,7 @@ sys.path.append(str(Path(__file__).parent.parent / "src"))
 from grabharvester import DownloadManager, DownloadService, DownloadTask
 
 # NOTE: We do NOT enable logger here, so it should be silent
+
 
 def main():
     """Main function to run the library example."""
