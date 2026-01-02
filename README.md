@@ -13,6 +13,11 @@
   - [O Problema](#o-problema)
   - [A Solução: Grab Harvester](#a-solução-grab-harvester)
     - [Principais Funcionalidades](#principais-funcionalidades)
+  - [Como Rodar Localmente](#como-rodar-localmente)
+    - [1. Clone o repositório](#1-clone-o-repositório)
+    - [2. Configuração e Execução](#2-configuração-e-execução)
+      - [Opção A: Usando uv (Recomendado)](#opção-a-usando-uv-recomendado)
+      - [Opção B: Usando pip](#opção-b-usando-pip)
   - [Aprendizados e Arquitetura](#aprendizados-e-arquitetura)
   - [Autor](#autor)
   - [Licença](#licença)
@@ -39,6 +44,56 @@ O **Grab Harvester** foi criado para resolver exatamente esses problemas, oferec
 * **Verificação de Integridade:** Antes de iniciar um download, o sistema verifica se o arquivo já existe no destino. Se existir, compara o tamanho do arquivo local com o remoto (`Content-Length`). O download só é refeito se o arquivo local estiver incompleto, economizando recursos.
 * **Tratamento Robusto de Erros:** Captura e encapsula exceções comuns de rede (usando `httpx`) e de operações de arquivo (I/O), como `NetworkDownloadError` e `FileOperationError`. Isso permite que a aplicação que o utiliza possa tratar as falhas de forma granular, sem que o programa inteiro pare inesperadamente.
 * **Simplicidade de Uso:** Oferece uma interface limpa e direta para iniciar o processo de download, abstraindo toda a complexidade de gerenciamento de threads e tratamento de erros.
+
+
+## Como Rodar Localmente
+
+Para executar este projeto em sua máquina, você precisará do [Python 3.11+](https://www.python.org/downloads/) instalado.
+
+### 1. Clone o repositório
+
+```bash
+git clone https://github.com/alexcamargos/grab-harvester.git
+cd grab-harvester
+```
+
+### 2. Configuração e Execução
+
+#### Opção A: Usando uv (Recomendado)
+
+O [uv](https://github.com/astral-sh/uv) é um gerenciador de pacotes extremamente rápido.
+
+1.  **Instale as dependências:**
+    ```bash
+    uv sync
+    ```
+
+2.  **Execute o exemplo ou os testes:**
+    ```bash
+    uv run examples/library_example.py
+    uv run pytest
+    ```
+
+#### Opção B: Usando pip
+
+1.  **Crie e ative um ambiente virtual:**
+    ```bash
+    python -m venv .venv
+    source .venv/bin/activate  # Linux/macOS
+    # .venv\Scripts\activate   # Windows
+    ```
+
+2.  **Instale as dependências:**
+    ```bash
+    pip install httpx loguru tqdm
+    pip install pytest pytest-mock  # Para rodar os testes
+    ```
+
+3.  **Execute:**
+    ```bash
+    python examples/library_example.py
+    pytest
+    ```
 
 
 ## Aprendizados e Arquitetura
