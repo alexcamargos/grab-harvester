@@ -166,6 +166,7 @@ O desenvolvimento do Grab Harvester foi uma excelente oportunidade para aplicar 
     * Lógica para refazer downloads de arquivos incompletos.
 
     O uso do `mocker` foi fundamental para isolar o `DownloadService` de sistemas externos (rede e sistema de arquivos), garantindo testes rápidos, determinísticos e confiáveis.
+5. **Automação de Qualidade (Pre-commit):** Integração de ferramentas de linter e formatadores automáticos via `pre-commit`. Isso assegura a criação de código melhor estruturado e formatado, mantendo a base de código limpa e consistente automaticamente.
 
 
 ## Autor
