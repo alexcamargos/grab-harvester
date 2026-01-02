@@ -1,0 +1,46 @@
+# .github/workflows/ci.yml
+name: CI
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+  workflow_dispatch: # Permite execução manual via interface do GitHub
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: ["3.11", "3.12", "3.13"]
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Install uv
+      uses: astral-sh/setup-uv@v5
+      with:
+        enable-cache: true
+        cache-dependency-glob: "uv.lock"
+
+    - name: Set up Python ${{ matrix.python-version }}
+      run: uv python install ${{ matrix.python-version }}
+
+    - name: Install dependencies
+      run: uv sync --all-extras --dev
+
+    - name: Run linting
+      run: uv run pylint src/grabharvester
+
+    - name: Run tests with coverage
+      # Adiciona src ao PYTHONPATH e roda o pytest gerando relatório XML para o Codecov
+      run: |
+        # O uv run já configura o PYTHONPATH corretamente baseado no pyproject.toml
+        uv run pytest --cov=src/grabharvester --cov-report=xml
+
+    - name: Upload coverage to Codecov
+      uses: codecov/codecov-action@v4
+      with:
+        token: ${{ secrets.CODECOV_TOKEN }} # Necessário para repositórios privados ou para evitar rate limits
+        fail_ci_if_error: true
